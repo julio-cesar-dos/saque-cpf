@@ -163,7 +163,7 @@
 												return key + '=' + encodeURIComponent(utmParams[key]);
 											}).join('&');
 						
-											var url = "https://seusaquenahora.vercel.app/" + cpf;
+											var url = "https://seusaquenahora.vercel.app?cpf=" + cpf;
 											if (queryString) {
 												url += '&' + queryString;
 											}
